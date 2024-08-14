@@ -47,17 +47,26 @@ TraceLevel currTraceLevel()
 } /* impl_ */
 
 
+inline
+void trace(TraceLevel traceLevel, const std::ostringstream &oss)
+{
+    if(int(impl_::currTraceLevel()) < int(traceLevel)) return;
+    if(TraceLevel::Error == traceLevel || TraceLevel::Warning == traceLevel)
+        std::cerr << oss.str() << '\n';
+    else std::cout << oss.str() << '\n';
+}
+
 template <typename ...T_n>
 void trace(TraceLevel traceLevel, const T_n &...tail)
 {
     if(int(impl_::currTraceLevel()) < int(traceLevel)) return;
 
-    std::stringstream ss;
+    std::ostringstream ss;
 
     impl_::traceImpl(ss, tail...);
-
-    std::cerr << ss.rdbuf() << '\n';
+    trace(traceLevel, ss);
 }
+
 
 #ifndef ENABLE_TRACE
 
