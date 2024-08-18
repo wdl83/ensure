@@ -5,6 +5,12 @@
 #include <sstream>
 #include <string>
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
+#include <unistd.h>
+
 enum class TraceLevel
 {
     Error,
@@ -51,9 +57,11 @@ inline
 void trace(TraceLevel traceLevel, const std::ostringstream &oss)
 {
     if(int(impl_::currTraceLevel()) < int(traceLevel)) return;
-    if(TraceLevel::Error == traceLevel || TraceLevel::Warning == traceLevel)
-        std::cerr << oss.str() << '\n';
-    else std::cout << oss.str() << '\n';
+
+    std::ostream &dst =
+        TraceLevel::Error == traceLevel || TraceLevel::Warning == traceLevel
+        ? std::cerr : std::cout;
+    dst << '[' << ::getpid() << '|' << ::gettid() << "] " << oss.str() << '\n';
 }
 
 template <typename ...T_n>
