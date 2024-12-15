@@ -13,11 +13,22 @@
 
 enum class TraceLevel
 {
-    Error,
+    begin,
+    Error = begin,
     Warning,
     Info,
-    Debug
+    Debug,
+    end
 };
+
+inline
+const char* toString(TraceLevel level)
+{
+    const char *str[] = {"E", "W", "I", "D"};
+    return
+        TraceLevel::end > level && TraceLevel::begin <= level
+        ?  str[int(level)] : "U";
+}
 
 using LogLevel = TraceLevel;
 
@@ -61,7 +72,11 @@ void trace(TraceLevel traceLevel, const std::ostringstream &oss)
     std::ostream &dst =
         TraceLevel::Error == traceLevel || TraceLevel::Warning == traceLevel
         ? std::cerr : std::cout;
-    dst << '[' << ::getpid() << '|' << ::gettid() << "] " << oss.str() << '\n';
+    dst << '['
+        << ::getpid() << '|'
+        << ::gettid() << '|'
+        << toString(traceLevel) << "] "
+        << oss.str() << '\n';
 }
 
 template <typename ...T_n>
