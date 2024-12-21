@@ -10,6 +10,7 @@
 #endif
 
 #include <unistd.h>
+#undef _GNU_SOURCE
 
 enum class TraceLevel
 {
