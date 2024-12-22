@@ -76,7 +76,7 @@ void trace(TraceLevel traceLevel, const std::ostringstream &oss)
         << ::getpid() << '|'
         << ::gettid() << '|'
         << toString(traceLevel) << "] "
-        << oss.str() << '\n';
+        << oss.str() << std::endl;
 }
 
 template <typename ...T_n>
