@@ -19,16 +19,16 @@ enum class TraceLevel
     Warning,
     Info,
     Debug,
+    Trace,
     end
 };
 
 inline
 const char* toString(TraceLevel level)
 {
-    const char *str[] = {"E", "W", "I", "D"};
-    return
-        TraceLevel::end > level && TraceLevel::begin <= level
-        ?  str[int(level)] : "U";
+    static const char *str[] = {"E", "W", "I", "D", "T"};
+    static_assert(sizeof(str) / sizeof(str[0]) == int(TraceLevel::end) - int(TraceLevel::begin));
+    return TraceLevel::end > level && TraceLevel::begin <= level ?  str[int(level)] : "?";
 }
 
 using LogLevel = TraceLevel;
@@ -55,11 +55,10 @@ void traceImpl(std::ostream &os, const T &value, const T_n &...tail)
 inline
 TraceLevel currTraceLevel()
 {
-    static const TraceLevel traceLevel =
-        ::getenv("TRACE_LEVEL")
-        ? static_cast<TraceLevel>(::atoi(::getenv("TRACE_LEVEL")))
-        : TraceLevel::Info;
-    return traceLevel;
+    static const char *env = ::getenv("TRACE_LEVEL");
+    static const TraceLevel level =
+        env ? static_cast<TraceLevel>(::atoi(env)) : TraceLevel::Info;
+    return level;
 }
 
 } /* impl_ */
